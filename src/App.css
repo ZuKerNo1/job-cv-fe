@@ -1,0 +1,49 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+  text-decoration: none;
+}
+
+:root {
+  --primary-color: #4a90e2;
+  --secondary-color: #2c3e50;
+  --accent-color: #e74c3c;
+  --background-light: #f8f9fa;
+  --text-dark: #2c3e50;
+  --text-light: #95a5a6;
+  --light-color: #f5f6fa;
+  --sidebar-width: 250px;
+  --success-color: #2ecc71;
+  --chat-bg: #fff;
+  --message-sender-bg: #e3f2fd;
+  --message-receiver-bg: #f5f6fa;
+}
+
+body {
+  background-color: var(--background-light) !important;
+}
+label {
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+input[type='text'],
+input[type='tel'],
+select,
+textarea {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
+}

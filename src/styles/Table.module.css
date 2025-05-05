@@ -1,0 +1,174 @@
+/* Table Styles */
+.data_section {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+.section_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.data_table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data_table th,
+.data_table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.data_table th {
+  background: #f8f9fa;
+  font-weight: 600;
+}
+
+.data_table tr:hover {
+  background: #f8f9fa;
+}
+
+.table_actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn_action {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn_primary {
+  background: var(--primary-color);
+  color: white;
+}
+.action_button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s ease;
+}
+.btn_view {
+  background: #f1c40f;
+  color: white;
+}
+
+.btn_edit {
+  background: #3498db;
+  color: white;
+}
+
+.btn_delete {
+  background: #e74c3c;
+  color: white;
+}
+
+/* Status Badges */
+.status {
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status_active {
+  background: #2ecc71;
+  color: white;
+}
+.status_accept {
+  background: #2ecc71;
+  color: white;
+}
+
+.status_pending {
+  background: #f1c40f;
+  color: white;
+}
+
+.status_inactive {
+  background: #95a5a6;
+  color: white;
+}
+.status_reject {
+  background: #e74c3c;
+  color: white;
+}
+/* Toggle Menu Button */
+.toggle_menu {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-darkr);
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Form Styles */
+.form {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.form_group {
+  margin-bottom: 20px;
+}
+
+.form_group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.form_group input,
+.form_group textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form_group input.error,
+.form_group textarea.error {
+  border-color: #dc3545;
+}
+
+.form_actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn_cancel,
+.btn_submit {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn_cancel {
+  background: #6c757d;
+  color: white;
+}
+
+.btn_submit {
+  background: var(--primary-color);
+  color: white;
+}
