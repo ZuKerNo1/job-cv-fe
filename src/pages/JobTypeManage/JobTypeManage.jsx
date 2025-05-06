@@ -3,6 +3,7 @@ import Header from '../../components/Header/Admin/Header';
 import { useEffect, useState } from 'react';
 import TableJobTypes from '../../components/TableJobTypes/TableJobTypes';
 import PageLoadingSpinner from '../../components/Loading/PageLoadingSpinner';
+import { getListJobType } from '../../apis';
 
 const JobTypeManage = () => {
   const [listJobTypes, setListJobTypes] = useState(null);
@@ -12,12 +13,8 @@ const JobTypeManage = () => {
   }, []);
 
   const fetchJobTypes = async () => {
-    // TODO: Replace with actual API call
-    const mockData = [
-      { _id: '1', name: 'Full-time', description: 'Công việc toàn thời gian', jobCount: 10 },
-      { _id: '2', name: 'Part-time', description: 'Công việc bán thời gian', jobCount: 5 }
-    ];
-    setListJobTypes(mockData);
+    const result = await getListJobType();
+    setListJobTypes(result);
   };
 
   return (

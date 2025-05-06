@@ -1,18 +1,37 @@
 import { Box } from '@mui/material';
 import Header from '../../../components/Header/Admin/Header';
 import styles from '../../../styles/Table.module.css';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import FieldErrorAlert from '../../../components/Form/FieldErrorAlert';
-import { createJobType } from '../../../apis';
+import { editJobType, getDetailJobType } from '../../../apis';
+import { toast } from 'react-toastify';
 
-const CreateJobType = () => {
+const EditJobType = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [formData, setFormData] = useState({
     name: '',
     description: ''
   });
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    const fetchJobType = async () => {
+      try {
+        const data = await getDetailJobType(id);
+        setFormData({
+          name: data.name,
+          description: data.description
+        });
+      } catch (error) {
+        toast.error('Không thể tải thông tin loại công việc');
+        navigate('/admin/job-types');
+      }
+    };
+
+    fetchJobType();
+  }, [id, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,7 +39,6 @@ const CreateJobType = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user types
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -46,19 +64,20 @@ const CreateJobType = () => {
     if (!validateForm()) return;
 
     try {
-      await createJobType(formData);
+      await editJobType(id, formData);
+      toast.success('Cập nhật thành công!');
       navigate('/admin/job-types');
     } catch (error) {
-      setErrors({ submit: 'Failed to create job type. Please try again.' });
+      setErrors({ submit: 'Không thể cập nhật loại công việc. Vui lòng thử lại.' });
     }
   };
 
   return (
     <Box>
-      <Header title={'Thêm loại công việc'} />
+      <Header title={'Chỉnh sửa loại công việc'} />
       <div className={styles.data_section}>
         <div className={styles.section_header}>
-          <h3 className={styles.section_title}>Thêm loại công việc mới</h3>
+          <h3 className={styles.section_title}>Chỉnh sửa loại công việc</h3>
         </div>
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.form_group}>
@@ -96,7 +115,7 @@ const CreateJobType = () => {
               Hủy
             </button>
             <button type="submit" className={styles.btn_submit}>
-              Thêm mới
+              Cập nhật
             </button>
           </div>
         </form>
@@ -105,4 +124,4 @@ const CreateJobType = () => {
   );
 };
 
-export default CreateJobType;
+export default EditJobType;

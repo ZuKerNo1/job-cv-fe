@@ -89,7 +89,26 @@ export const updateJobAPI = async (id, data) => {
   return response.data;
 };
 /** Job */
-
+export const getListJobType = async () => {
+  const response = await authorizeAxiosIntance.get(`${API_ROOT}/v1/categories`);
+  return response.data;
+};
+export const createJobType = async (data) => {
+  const response = await authorizeAxiosIntance.post(`${API_ROOT}/v1/categories`, data);
+  return response.data;
+};
+export const getDetailJobType = async (id) => {
+  const response = await authorizeAxiosIntance.get(`${API_ROOT}/v1/categories/${id}`);
+  return response.data;
+};
+export const editJobType = async (id, data) => {
+  const response = await authorizeAxiosIntance.put(`${API_ROOT}/v1/categories/${id}`, data);
+  return response.data;
+};
+export const deleteJobType = async (id) => {
+  const response = await authorizeAxiosIntance.delete(`${API_ROOT}/v1/categories/${id}`);
+  return response.data;
+};
 /** Dash board */
 export const statisticsAPI = async () => {
   const response = await authorizeAxiosIntance.get(`${API_ROOT}/v1/users/statistic`);

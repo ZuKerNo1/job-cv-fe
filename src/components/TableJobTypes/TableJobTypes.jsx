@@ -19,7 +19,6 @@ const TableJobTypes = ({ title, listJobTypes, onReload }) => {
             <th>STT</th>
             <th>Tên loại</th>
             <th>Mô tả</th>
-            <th>Số lượng công việc</th>
             <th>Thao tác</th>
           </tr>
         </thead>

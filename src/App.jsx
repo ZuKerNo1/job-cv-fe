@@ -39,7 +39,8 @@ import ReviewDetail from './pages/ReviewManage/_id.jsx';
 import Profile from './pages/Profile/Profile.jsx';
 import JobTypeManage from './pages/JobTypeManage/JobTypeManage.jsx';
 import CreateJobType from './pages/JobTypeManage/CreateJobType/CreateJobType.jsx';
-// import CreateForm from './pages/UserManage/CreateForm/CreateForm.jsx';
+import EditJobType from './pages/JobTypeManage/EditJobType/EditJobType.jsx';
+
 const PrivateRoute = ({ isAllowed, redirectPath = '/login' }) => {
   if (!isAllowed) {
     return <Navigate to={redirectPath} replace />;
@@ -88,6 +89,7 @@ function App() {
           <Route path="/admin/jobs/edit/:id" element={<EditJob />} />
           <Route path="/admin/job-types" element={<JobTypeManage />} />
           <Route path="/admin/job-types/create" element={<CreateJobType />} />
+          <Route path="/admin/job-types/edit/:id" element={<EditJobType />} />
           <Route path="/admin/contracts/" element={<ContractManage />} />
           <Route path="/admin/contracts/edit/:id" element={<EditContract />} />
           <Route path="/admin/complains/" element={<ComplainMangage />} />
@@ -102,7 +104,7 @@ function App() {
           <Route path="/employer/jobs/edit/:id" element={<EditJobEmployer />} />
           <Route path="/employer/create-job" element={<CreateJob />} />
           <Route path="/employer/contract" element={<ContractEmployer />} />
-          <Route path="/employer/contract/edit/:id" element={<EditContractEmp />} />`
+          <Route path="/employer/contract/edit/:id" element={<EditContractEmp />} />
           <Route path="/employer/candidates" element={<CandidateManage />} />
           <Route path="/employer/candidates/details/:id" element={<CandidateDetails />} />
         </Route>
