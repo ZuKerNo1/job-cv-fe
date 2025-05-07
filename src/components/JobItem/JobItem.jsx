@@ -22,7 +22,7 @@ const JobItem = ({ job }) => {
           </span>
         ))}
       </div>
-      <Link to={`/apply/${job._id}`}>
+      <Link style={{}} to={`/apply/${job._id}`}>
         <button className={styles.apply_button}>Ứng tuyển ngay</button>
       </Link>
     </div>

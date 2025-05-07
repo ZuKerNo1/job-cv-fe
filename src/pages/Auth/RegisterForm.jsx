@@ -25,11 +25,11 @@ import {
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import FieldErrorAlert from '../../components/Form/FieldErrorAlert';
-import { registerUserAPI } from '../../apis';
+import { getListJobType, registerUserAPI } from '../../apis';
 import { toast } from 'react-toastify';
 
 import { ROLE_USER, SKILLS } from '../../utils/constants';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -54,6 +54,19 @@ function RegisterForm() {
     }
   });
   const [skills, setSkills] = useState([]);
+  const [jobTypes, setJobTypes] = useState([]);
+  const [listJobsType, setListJobsType] = useState([]);
+  useEffect(() => {
+    const fetchJobTypes = async () => {
+      try {
+        const response = await getListJobType();
+        setListJobsType(response);
+      } catch (error) {
+        toast.error('Không thể tải danh sách loại công việc');
+      }
+    };
+    fetchJobTypes();
+  }, []);
   const handleChangeSkills = (event) => {
     const {
       target: { value }
@@ -62,6 +75,13 @@ function RegisterForm() {
       // On autofill we get a stringified value.
       typeof value === 'string' ? value.split(',') : value
     );
+  };
+  const handleChangeJobTypes = (event) => {
+    const {
+      target: { value }
+    } = event;
+
+    setJobTypes(typeof value === 'string' ? value.split(',') : value);
   };
   const submitRegister = (data) => {
     delete data.password_confirmation;
@@ -153,6 +173,43 @@ function RegisterForm() {
               />
               <FieldErrorAlert errors={errors} fieldName={'password_confirmation'} />
             </Box>
+            <FormControl fullWidth margin="dense">
+              <InputLabel>Job Categories</InputLabel>
+              <Controller
+                name="categories"
+                control={control}
+                defaultValue={[]}
+                rules={{ required: FIELD_REQUIRED_MESSAGE }}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    multiple
+                    label="Job Categories"
+                    onChange={(event) => {
+                      field.onChange(event.target.value);
+                      handleChangeJobTypes(event);
+                    }}
+                    error={!!errors['categories']}
+                    value={field.value}
+                    renderValue={(selected) => {
+                      const selectedNames = selected
+                        .map((id) => listJobsType.find((job) => job._id === id)?.name)
+                        .filter(Boolean);
+                      return selectedNames.join(', ');
+                    }}
+                    MenuProps={MenuProps}
+                  >
+                    {listJobsType.map((job) => (
+                      <MenuItem key={job._id} value={job._id}>
+                        <Checkbox checked={field.value.indexOf(job._id) > -1} />
+                        <ListItemText primary={job.name} />
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+              <FieldErrorAlert errors={errors} fieldName={'categories'} />
+            </FormControl>
             <Box
               sx={{
                 display: 'flex',

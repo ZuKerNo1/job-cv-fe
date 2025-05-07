@@ -7,7 +7,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -17,6 +17,7 @@ import FieldErrorAlert from '../../components/Form/FieldErrorAlert';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCurrentUser, updateUserAPI } from '../../redux/User/userSlice';
 import { toast } from 'react-toastify';
+import { getListJobType } from '../../apis';
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -29,6 +30,19 @@ const MenuProps = {
 };
 const Profile = () => {
   const user = useSelector(selectCurrentUser);
+  const [jobTypes, setJobTypes] = useState([]);
+  useEffect(() => {
+    const fetchJobTypes = async () => {
+      try {
+        const response = await getListJobType();
+        setJobTypes(response);
+      } catch (error) {
+        toast.error('Không thể tải danh sách loại công việc');
+      }
+    };
+    fetchJobTypes();
+  }, []);
+
   const {
     register,
     control,
@@ -45,6 +59,7 @@ const Profile = () => {
       typeof value === 'string' ? value.split(',') : value
     );
   };
+
   const dispatch = useDispatch();
 
   const submitEditProfile = async (data) => {
@@ -113,6 +128,40 @@ const Profile = () => {
             />
             <FieldErrorAlert errors={errors} fieldName={'email'} />
           </Box>
+          {user.role === ROLE_USER.JOB_SEEKER && (
+            <FormControl fullWidth margin="dense">
+              <InputLabel>Job Categories</InputLabel>
+              <Controller
+                name="categories"
+                control={control}
+                defaultValue={user.categories || []}
+                rules={{ required: FIELD_REQUIRED_MESSAGE }}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    multiple
+                    label="Job Categories"
+                    error={!!errors['categories']}
+                    renderValue={(selected) => {
+                      const selectedNames = selected
+                        .map((id) => jobTypes.find((job) => job._id === id)?.name)
+                        .filter(Boolean);
+                      return selectedNames.join(', ');
+                    }}
+                    MenuProps={MenuProps}
+                  >
+                    {jobTypes.map((job) => (
+                      <MenuItem key={job._id} value={job._id}>
+                        <Checkbox checked={field.value?.indexOf(job._id) > -1} />
+                        <ListItemText primary={job.name} />
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+              <FieldErrorAlert errors={errors} fieldName={'categories'} />
+            </FormControl>
+          )}
 
           {user.role === ROLE_USER.EMPLOYER && (
             <Box sx={{ marginBottom: '1em' }}>

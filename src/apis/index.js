@@ -38,11 +38,11 @@ export const updateUser = async (id, data) => {
 /** Users */
 
 /** Job */
-export const getListJobByUserAPI = async (limit, skills, workLocation, salary) => {
+export const getListJobByUserAPI = async (limit, idCategories, workLocation, salary) => {
   limit = limit || 3;
   let query = `?limit=${limit}`;
-  if (skills) {
-    query += `&skills=${skills}`;
+  if (idCategories && idCategories.length > 0) {
+    query += `&idCategory=${idCategories.join(',')}`;
   }
   if (workLocation) {
     query += `&workLocation=${workLocation}`;

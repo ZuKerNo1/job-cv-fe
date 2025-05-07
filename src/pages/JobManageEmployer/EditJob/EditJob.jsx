@@ -17,7 +17,7 @@ import { JOB_LOCATION, SKILLS } from '../../../utils/constants';
 import { useEffect, useState } from 'react';
 import DateTimeInput from '../../../components/Form/DateTimeInput';
 import { toast } from 'react-toastify';
-import { getDetailsJob, updateJobAPI } from '../../../apis';
+import { getDetailsJob, getListJobType, updateJobAPI } from '../../../apis';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const ITEM_HEIGHT = 48;
@@ -43,6 +43,7 @@ const EditJobEmployer = () => {
   });
 
   const [job, setJob] = useState(null);
+  const [jobTypes, setJobTypes] = useState([]);
   const { id } = useParams();
   const submitCreateJob = async (data) => {
     data.salary = parseInt(data.salary);
@@ -67,6 +68,15 @@ const EditJobEmployer = () => {
     setSkills(typeof value === 'string' ? value.split(',') : value);
   };
   useEffect(() => {
+    const fetchJobTypes = async () => {
+      try {
+        const response = await getListJobType();
+        setJobTypes(response);
+      } catch (error) {
+        toast.error('Không thể tải danh sách loại công việc');
+      }
+    };
+    fetchJobTypes();
     getDetailsJob(id)
       .then((data) => {
         if (!data) {
@@ -220,6 +230,30 @@ const EditJobEmployer = () => {
               )}
             />
             <FieldErrorAlert errors={errors} fieldName={'jobLocation'} />
+          </FormControl>
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Loại công việc</InputLabel>
+            <Controller
+              name="idCategory"
+              control={control}
+              defaultValue={job.idCategory}
+              rules={{ required: FIELD_REQUIRED_MESSAGE }}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  label="Loại công việc"
+                  error={!!errors['jobType']}
+                  value={field.value}
+                >
+                  {jobTypes.map((type) => (
+                    <MenuItem key={type._id} value={type._id}>
+                      <ListItemText primary={type.name} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+            />
+            <FieldErrorAlert errors={errors} fieldName={'jobType'} />
           </FormControl>
           <Box
             sx={{

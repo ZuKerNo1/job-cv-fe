@@ -43,6 +43,9 @@ const JobDetails = () => {
           <Typography variant="h6" gutterBottom>
             Vị Trí: {job.position}
           </Typography>
+          <Typography variant="h6" gutterBottom>
+            Loại công việc: {job.categoryDetails.name}
+          </Typography>
           <Typography variant="h6" component="h2" gutterBottom>
             Mô tả công việc
           </Typography>

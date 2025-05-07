@@ -7,11 +7,15 @@ import {
   OutlinedInput,
   Select,
   TextField,
-  useTheme
+  Checkbox,
+  ListItemText
 } from '@mui/material';
-import { useState } from 'react';
-import { JOB_LOCATION, SKILLS } from '../../utils/constants';
+import { useState, useEffect } from 'react';
+import { JOB_LOCATION } from '../../utils/constants';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { getListJobType } from '../../apis';
+import { toast } from 'react-toastify';
+
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -22,50 +26,51 @@ const MenuProps = {
     }
   }
 };
-function getStyles(name, personName, theme) {
-  return {
-    fontWeight:
-      personName.indexOf(name) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium
-  };
-}
+
 const FormSearchJob = ({ onSearch }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const theme = useTheme();
   const [workLocation, setWorkLocation] = useState(searchParams.get('work-location') || '');
-  const [skills, setSkills] = useState(searchParams.get('skills')?.split(',') || []);
+  const [idCategories, setIdCategories] = useState(
+    searchParams.get('idCategory')?.split(',') || []
+  );
   const [salary, setSalary] = useState(searchParams.get('salary') || '');
-  const handleChangeSkills = (event) => {
-    const {
-      target: { value }
-    } = event;
-    setSkills(typeof value === 'string' ? value.split(',') : value);
-  };
+  const [jobTypes, setJobTypes] = useState([]);
+
+  useEffect(() => {
+    const fetchJobTypes = async () => {
+      try {
+        const response = await getListJobType();
+        setJobTypes(response);
+      } catch (error) {
+        toast.error('Không thể tải danh sách loại công việc');
+      }
+    };
+    fetchJobTypes();
+  }, []);
 
   const handleSearch = async () => {
     let search = '';
     if (workLocation) {
       search += `&work-location=${workLocation}`;
     }
-    if (skills?.length) {
-      search += `&skills=${skills}`;
+    if (idCategories.length > 0) {
+      search += `&idCategory=${idCategories.join(',')}`;
     }
     if (salary) {
       search += `&salary=${salary}`;
     }
     if (location.pathname !== '/search') {
-      navigate(`/search${search ? '?' + search : ''}`);
+      navigate(`/search${search ? '?' + search.substring(1) : ''}`);
     } else {
-      navigate(`/search${search ? '?' + search : ''}`);
-      onSearch(skills, workLocation, salary);
+      navigate(`/search${search ? '?' + search.substring(1) : ''}`);
+      onSearch(idCategories, workLocation, salary);
     }
   };
+
   return (
     <Box
-      // component="form"
       sx={{
         display: 'flex',
         flexDirection: 'row',
@@ -87,26 +92,33 @@ const FormSearchJob = ({ onSearch }) => {
       }}
     >
       <FormControl variant="outlined" sx={{ minWidth: 220, maxWidth: 250 }}>
-        <InputLabel id="multiple-skills-label">Skills</InputLabel>
+        <InputLabel id="job-type-label">Loại công việc</InputLabel>
         <Select
-          labelId="multiple-skills-label"
-          id="multiple-skills-label"
+          labelId="job-type-label"
+          id="job-type"
           multiple
-          value={skills}
-          onChange={handleChangeSkills}
-          input={<OutlinedInput label="Skills" />}
+          value={idCategories}
+          onChange={(e) => setIdCategories(e.target.value)}
+          input={<OutlinedInput label="Loại công việc" />}
+          renderValue={(selected) => {
+            return jobTypes
+              .filter((type) => selected.includes(type._id))
+              .map((type) => type.name)
+              .join(', ');
+          }}
           MenuProps={MenuProps}
         >
-          {SKILLS.map((skill) => (
-            <MenuItem key={skill} value={skill} style={getStyles(skill, skills, theme)}>
-              {skill}
+          {jobTypes.map((type) => (
+            <MenuItem key={type._id} value={type._id}>
+              <Checkbox checked={idCategories.indexOf(type._id) > -1} />
+              <ListItemText primary={type.name} />
             </MenuItem>
           ))}
         </Select>
       </FormControl>
 
       <FormControl variant="outlined" sx={{ minWidth: 145 }}>
-        <InputLabel id="select-work-location-label">Work Location</InputLabel>
+        <InputLabel id="select-work-location-label">Nơi làm việc</InputLabel>
         <Select
           labelId="select-work-location-label"
           id="select-work-location"
@@ -131,7 +143,7 @@ const FormSearchJob = ({ onSearch }) => {
       >
         <TextField
           variant="outlined"
-          label="Salary"
+          label="Mức lương"
           name="salary"
           sx={{ flex: 1 }}
           type="number"

@@ -14,11 +14,11 @@ import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 
 import { JOB_LOCATION, SKILLS } from '../../../utils/constants';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import DateTimeInput from '../../../components/Form/DateTimeInput';
 import { toast } from 'react-toastify';
-import { createJobAPI } from '../../../apis';
+import { createJobAPI, getListJobType } from '../../../apis';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '../../../redux/User/userSlice';
@@ -37,6 +37,10 @@ const MenuProps = {
 const CreateJob = () => {
   const navigate = useNavigate();
   const userCurrent = useSelector(selectCurrentUser);
+  const [jobTypes, setJobTypes] = useState([]);
+  const [skills, setSkills] = useState([]);
+  const [selectedJobTypes, setSelectedJobTypes] = useState([]);
+
   const {
     control,
     handleSubmit,
@@ -45,9 +49,37 @@ const CreateJob = () => {
   } = useForm({
     defaultValues: {
       applicationDeadline: dayjs().add(3, 'day'),
-      description: ''
+      description: '',
+      idCategory: [] // Add default value for jobType
     }
   });
+
+  useEffect(() => {
+    const fetchJobTypes = async () => {
+      try {
+        const response = await getListJobType();
+        setJobTypes(response);
+      } catch (error) {
+        toast.error('Không thể tải danh sách loại công việc');
+      }
+    };
+    fetchJobTypes();
+  }, []);
+
+  const handleChangeSkills = (event) => {
+    const {
+      target: { value }
+    } = event;
+    setSkills(typeof value === 'string' ? value.split(',') : value);
+  };
+
+  const handleChangeJobTypes = (event) => {
+    const {
+      target: { value }
+    } = event;
+    setSelectedJobTypes(typeof value === 'string' ? value.split(',') : value);
+  };
+
   const submitCreateJob = async (data) => {
     data.creatorId = userCurrent._id;
     toast.promise(createJobAPI(data), {
@@ -57,16 +89,11 @@ const CreateJob = () => {
           navigate('/employer/jobs');
           return 'Tạo mới thành công !';
         }
-      }
+      },
+      error: 'Có lỗi xảy ra khi tạo việc làm'
     });
   };
-  const [skills, setSkills] = useState([]);
-  const handleChangeSkills = (event) => {
-    const {
-      target: { value }
-    } = event;
-    setSkills(typeof value === 'string' ? value.split(',') : value);
-  };
+
   return (
     <Box>
       <Header title={'Đăng tin tuyển dụng mới'} />
@@ -205,6 +232,44 @@ const CreateJob = () => {
           />
           <FieldErrorAlert errors={errors} fieldName={'jobLocation'} />
         </FormControl>
+
+        <FormControl fullWidth margin="normal">
+          <InputLabel>Loại công việc</InputLabel>
+          <Controller
+            name="idCategory"
+            control={control}
+            defaultValue={[]}
+            rules={{ required: FIELD_REQUIRED_MESSAGE }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                label="Loại công việc"
+                onChange={(event) => {
+                  field.onChange(event.target.value);
+                  handleChangeJobTypes(event);
+                }}
+                error={!!errors['jobType']}
+                value={field.value}
+                renderValue={(selected) => {
+                  return jobTypes
+                    .filter((type) => selected.includes(type._id))
+                    .map((type) => type.name)
+                    .join(', ');
+                }}
+                MenuProps={MenuProps}
+              >
+                {jobTypes.map((type) => (
+                  <MenuItem key={type._id} value={type._id}>
+                    <Checkbox checked={field.value.indexOf(type._id) > -1} />
+                    <ListItemText primary={type.name} />
+                  </MenuItem>
+                ))}
+              </Select>
+            )}
+          />
+          <FieldErrorAlert errors={errors} fieldName={'jobType'} />
+        </FormControl>
+
         <Box
           sx={{
             display: 'flex',

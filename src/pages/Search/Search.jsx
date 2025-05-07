@@ -6,20 +6,22 @@ import { useEffect, useState } from 'react';
 import { getListJobByUserAPI } from '../../apis';
 import JobItem from '../../components/JobItem/JobItem';
 import { useSearchParams } from 'react-router-dom';
+
 const Search = () => {
   const [searchParams] = useSearchParams();
 
   const salary = searchParams.get('salary') || '';
   const workLocation = searchParams.get('work-location') || '';
-  const skills = searchParams.get('skills')?.split(',') || '';
+  const idCategories = searchParams.get('idCategory')?.split(',') || [];
   const [listJob, setListJob] = useState(null);
 
   useEffect(() => {
-    fetchSearchJobApi(skills, workLocation, salary);
+    fetchSearchJobApi(idCategories, workLocation, salary);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const fetchSearchJobApi = async (skills, workLocation, salary) => {
-    const data = await getListJobByUserAPI(10, skills, workLocation, salary);
+
+  const fetchSearchJobApi = async (idCategories, workLocation, salary) => {
+    const data = await getListJobByUserAPI(10, idCategories, workLocation, salary);
     setListJob(data.jobs);
   };
 
@@ -52,11 +54,10 @@ const Search = () => {
         </Box>
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'stretch',
-            padding: '10px',
-            gap: '10px'
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: '10px',
+            padding: '10px'
           }}
         >
           {listJob ? (
