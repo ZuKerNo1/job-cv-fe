@@ -36,6 +36,7 @@ const FormSearchJob = ({ onSearch }) => {
     searchParams.get('idCategory')?.split(',') || []
   );
   const [salary, setSalary] = useState(searchParams.get('salary') || '');
+  const [keyword, setKeyword] = useState(searchParams.get('keyword') || '');
   const [jobTypes, setJobTypes] = useState([]);
 
   useEffect(() => {
@@ -61,11 +62,14 @@ const FormSearchJob = ({ onSearch }) => {
     if (salary) {
       search += `&salary=${salary}`;
     }
+    if (keyword) {
+      search += `&keyword=${keyword}`;
+    }
     if (location.pathname !== '/search') {
       navigate(`/search${search ? '?' + search.substring(1) : ''}`);
     } else {
       navigate(`/search${search ? '?' + search.substring(1) : ''}`);
-      onSearch(idCategories, workLocation, salary);
+      onSearch(idCategories, workLocation, salary, keyword);
     }
   };
 
@@ -73,9 +77,8 @@ const FormSearchJob = ({ onSearch }) => {
     <Box
       sx={{
         display: 'flex',
-        flexDirection: 'row',
+        flexDirection: 'column',
         gap: 2,
-        alignItems: 'center',
         '& .MuiOutlinedInput-input': {
           bgcolor: 'transparent',
           borderColor: '#000',
@@ -91,71 +94,94 @@ const FormSearchJob = ({ onSearch }) => {
         marginTop: 3
       }}
     >
-      <FormControl variant="outlined" sx={{ minWidth: 220, maxWidth: 250 }}>
-        <InputLabel id="job-type-label">Loại công việc</InputLabel>
-        <Select
-          labelId="job-type-label"
-          id="job-type"
-          multiple
-          value={idCategories}
-          onChange={(e) => setIdCategories(e.target.value)}
-          input={<OutlinedInput label="Loại công việc" />}
-          renderValue={(selected) => {
-            return jobTypes
-              .filter((type) => selected.includes(type._id))
-              .map((type) => type.name)
-              .join(', ');
-          }}
-          MenuProps={MenuProps}
-        >
-          {jobTypes.map((type) => (
-            <MenuItem key={type._id} value={type._id}>
-              <Checkbox checked={idCategories.indexOf(type._id) > -1} />
-              <ListItemText primary={type.name} />
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <FormControl variant="outlined" sx={{ minWidth: 145 }}>
-        <InputLabel id="select-work-location-label">Nơi làm việc</InputLabel>
-        <Select
-          labelId="select-work-location-label"
-          id="select-work-location"
-          onChange={(e) => {
-            setWorkLocation(e.target.value);
-          }}
-          autoWidth
-          label="Work Location"
-          value={workLocation}
-        >
-          {JOB_LOCATION.map((jobLocation) => (
-            <MenuItem key={jobLocation} value={jobLocation}>
-              {jobLocation}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
       <Box
         sx={{
-          width: 120
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 2,
+          alignItems: 'center'
         }}
       >
-        <TextField
-          variant="outlined"
-          label="Mức lương"
-          name="salary"
-          sx={{ flex: 1 }}
-          type="number"
-          onChange={(e) => {
-            setSalary(parseInt(e.target.value));
-          }}
-          value={salary}
-        />
+        <FormControl variant="outlined" sx={{ minWidth: 220, maxWidth: 250 }}>
+          <InputLabel id="job-type-label">Loại công việc</InputLabel>
+          <Select
+            labelId="job-type-label"
+            id="job-type"
+            multiple
+            value={idCategories}
+            onChange={(e) => setIdCategories(e.target.value)}
+            input={<OutlinedInput label="Loại công việc" />}
+            renderValue={(selected) => {
+              return jobTypes
+                .filter((type) => selected.includes(type._id))
+                .map((type) => type.name)
+                .join(', ');
+            }}
+            MenuProps={MenuProps}
+          >
+            {jobTypes.map((type) => (
+              <MenuItem key={type._id} value={type._id}>
+                <Checkbox checked={idCategories.indexOf(type._id) > -1} />
+                <ListItemText primary={type.name} />
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl variant="outlined" sx={{ minWidth: 145 }}>
+          <InputLabel id="select-work-location-label">Nơi làm việc</InputLabel>
+          <Select
+            labelId="select-work-location-label"
+            id="select-work-location"
+            onChange={(e) => {
+              setWorkLocation(e.target.value);
+            }}
+            autoWidth
+            label="Work Location"
+            value={workLocation}
+          >
+            {JOB_LOCATION.map((jobLocation) => (
+              <MenuItem key={jobLocation} value={jobLocation}>
+                {jobLocation}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Box sx={{ width: 120 }}>
+          <TextField
+            variant="outlined"
+            label="Mức lương"
+            name="salary"
+            sx={{ flex: 1 }}
+            type="number"
+            onChange={(e) => {
+              setSalary(parseInt(e.target.value));
+            }}
+            value={salary}
+          />
+        </Box>
+        <Button variant="contained" color="primary" onClick={handleSearch}>
+          Tìm kiếm
+        </Button>
       </Box>
-      <Button variant="contained" color="primary" onClick={handleSearch}>
-        Tìm kiếm
-      </Button>
+      <TextField
+        variant="outlined"
+        label="Phúc lợi mong muốn"
+        name="keyword"
+        sx={{
+          width: 517,
+          '& .MuiOutlinedInput-input': {
+            bgcolor: 'transparent',
+            borderColor: '#3d3d3d',
+            borderWidth: '1px',
+            color: '#000'
+          }
+        }}
+        type="text"
+        onChange={(e) => {
+          setKeyword(e.target.value);
+        }}
+        value={keyword}
+      />
     </Box>
   );
 };

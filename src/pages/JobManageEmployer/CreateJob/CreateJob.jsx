@@ -4,7 +4,7 @@ import Header from '../../../components/Header/Admin/Header';
 import TinyMCEEditor from '../../../components/TinyMCEEditor/TinyMCEEditor';
 import { Controller, useForm } from 'react-hook-form';
 import FieldErrorAlert from '../../../components/Form/FieldErrorAlert';
-import { Button, InputLabel, Typography } from '@mui/material';
+import { Button, InputLabel, Typography, Autocomplete, Chip } from '@mui/material';
 import ButtonBack from '../../../components/ButtonBack/ButtonBack';
 import { FIELD_REQUIRED_MESSAGE } from '../../../utils/validators';
 import Select from '@mui/material/Select';
@@ -38,8 +38,7 @@ const CreateJob = () => {
   const navigate = useNavigate();
   const userCurrent = useSelector(selectCurrentUser);
   const [jobTypes, setJobTypes] = useState([]);
-  const [skills, setSkills] = useState([]);
-  const [selectedJobTypes, setSelectedJobTypes] = useState([]);
+  const [customSkills, setCustomSkills] = useState([]);
 
   const {
     control,
@@ -66,18 +65,15 @@ const CreateJob = () => {
     fetchJobTypes();
   }, []);
 
-  const handleChangeSkills = (event) => {
-    const {
-      target: { value }
-    } = event;
-    setSkills(typeof value === 'string' ? value.split(',') : value);
+  const handleChangeSkills = (event, newValue) => {
+    setCustomSkills(newValue);
   };
 
-  const handleChangeJobTypes = (event) => {
+  const handleChangeJobTypes = (event, field) => {
     const {
       target: { value }
     } = event;
-    setSelectedJobTypes(typeof value === 'string' ? value.split(',') : value);
+    field.onChange(value);
   };
 
   const submitCreateJob = async (data) => {
@@ -151,33 +147,31 @@ const CreateJob = () => {
           <FieldErrorAlert errors={errors} fieldName={'benefit'} />
         </Box>
         <FormControl fullWidth margin="dense">
-          <InputLabel>Requirements</InputLabel>
           <Controller
             name="requirements"
             control={control}
             defaultValue={[]}
             rules={{ required: FIELD_REQUIRED_MESSAGE }}
             render={({ field }) => (
-              <Select
+              <Autocomplete
                 {...field}
                 multiple
-                label="Requirements"
-                onChange={(event) => {
-                  field.onChange(event.target.value);
-                  handleChangeSkills(event);
+                options={SKILLS}
+                value={customSkills}
+                onChange={(event, newValue) => {
+                  field.onChange(newValue);
+                  handleChangeSkills(event, newValue);
                 }}
-                error={!!errors['requirements']}
-                value={field.value}
-                renderValue={(selected) => selected.join(', ')}
-                MenuProps={MenuProps}
-              >
-                {SKILLS.map((skill) => (
-                  <MenuItem key={skill} value={skill}>
-                    <Checkbox checked={skills.indexOf(skill) > -1} />
-                    <ListItemText primary={skill} />
-                  </MenuItem>
-                ))}
-              </Select>
+                freeSolo
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => (
+                    <Chip key={index} label={option} {...getTagProps({ index })} />
+                  ))
+                }
+                renderInput={(params) => (
+                  <TextField {...params} label="Requirements" error={!!errors['requirements']} />
+                )}
+              />
             )}
           />
           <FieldErrorAlert errors={errors} fieldName={'requirements'} />
@@ -244,10 +238,7 @@ const CreateJob = () => {
               <Select
                 {...field}
                 label="Loại công việc"
-                onChange={(event) => {
-                  field.onChange(event.target.value);
-                  handleChangeJobTypes(event);
-                }}
+                onChange={(event) => handleChangeJobTypes(event, field)}
                 error={!!errors['jobType']}
                 value={field.value}
                 renderValue={(selected) => {

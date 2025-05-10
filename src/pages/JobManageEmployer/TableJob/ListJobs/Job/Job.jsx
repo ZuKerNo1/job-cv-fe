@@ -8,7 +8,7 @@ const Job = ({ job, order, onReload }) => {
   const confirmDeleteJob = useConfirm();
   const handleDeleteJob = async () => {
     const { confirmed } = await confirmDeleteJob({
-      description: 'Hành động này sẽ xóa <b>Công việc</b> vĩnh viên !',
+      description: 'Hành động này sẽ xóa Công việc vĩnh viên !',
       title: 'Xóa công việc ?',
       confirmationText: 'Confirm',
       cancellationText: 'Cancel',

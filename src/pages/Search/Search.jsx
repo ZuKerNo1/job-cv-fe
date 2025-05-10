@@ -13,15 +13,16 @@ const Search = () => {
   const salary = searchParams.get('salary') || '';
   const workLocation = searchParams.get('work-location') || '';
   const idCategories = searchParams.get('idCategory')?.split(',') || [];
+  const keyword = searchParams.get('keyword') || '';
   const [listJob, setListJob] = useState(null);
 
   useEffect(() => {
-    fetchSearchJobApi(idCategories, workLocation, salary);
+    fetchSearchJobApi(idCategories, workLocation, salary, keyword);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchSearchJobApi = async (idCategories, workLocation, salary) => {
-    const data = await getListJobByUserAPI(10, idCategories, workLocation, salary);
+  const fetchSearchJobApi = async (idCategories, workLocation, salary, keyword) => {
+    const data = await getListJobByUserAPI(10, idCategories, workLocation, salary, keyword);
     setListJob(data.jobs);
   };
 

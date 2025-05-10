@@ -38,7 +38,7 @@ export const updateUser = async (id, data) => {
 /** Users */
 
 /** Job */
-export const getListJobByUserAPI = async (limit, idCategories, workLocation, salary) => {
+export const getListJobByUserAPI = async (limit, idCategories, workLocation, salary, keyword) => {
   limit = limit || 3;
   let query = `?limit=${limit}`;
   if (idCategories && idCategories.length > 0) {
@@ -50,7 +50,25 @@ export const getListJobByUserAPI = async (limit, idCategories, workLocation, sal
   if (salary) {
     query += `&salary=${salary}`;
   }
+  if (keyword) {
+    query += `&keyword=${keyword}`;
+  }
   const response = await authorizeAxiosIntance.get(`${API_ROOT}/v1/jobs/user/list-jobs${query}`);
+  return response.data;
+};
+export const getListJobForYouAPI = async (limit, idCategories, workLocation, salary) => {
+  limit = limit || 3;
+  let query = `?limit=${limit}`;
+  if (idCategories && idCategories.length > 0) {
+    query += `&idCategory=${idCategories.join(',')}`;
+  }
+  if (workLocation) {
+    query += `&workLocation=${workLocation}`;
+  }
+  if (salary) {
+    query += `&salary=${salary}`;
+  }
+  const response = await authorizeAxiosIntance.get(`${API_ROOT}/v1/jobs/user/related-jobs${query}`);
   return response.data;
 };
 export const getListJobAdminAPI = async () => {

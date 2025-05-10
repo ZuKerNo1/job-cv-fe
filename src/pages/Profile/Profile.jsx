@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Autocomplete, Chip } from '@mui/material';
 import Header from '../../components/Header/User/Header';
 import Footer from '../../components/Footer/Footer';
 import { ROLE_USER, SKILLS } from '../../utils/constants';
@@ -49,16 +49,7 @@ const Profile = () => {
     handleSubmit,
     formState: { errors }
   } = useForm();
-  const [skills, setSkills] = useState([]);
-  const handleChangeSkills = (event) => {
-    const {
-      target: { value }
-    } = event;
-    setSkills(
-      // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value
-    );
-  };
+  const [customSkills, setCustomSkills] = useState(user?.skills || []);
 
   const dispatch = useDispatch();
 
@@ -211,34 +202,31 @@ const Profile = () => {
               </Box>
 
               <FormControl fullWidth margin="dense">
-                <InputLabel>Skills</InputLabel>
                 <Controller
                   name="skills"
                   control={control}
                   defaultValue={user?.skills || []}
                   rules={{ required: FIELD_REQUIRED_MESSAGE }}
                   render={({ field }) => (
-                    <Select
+                    <Autocomplete
                       {...field}
                       multiple
-                      defaultValue={user?.skills || []}
-                      label="Skills"
-                      onChange={(event) => {
-                        field.onChange(event.target.value);
-                        handleChangeSkills(event);
+                      options={SKILLS}
+                      value={customSkills}
+                      onChange={(event, newValue) => {
+                        setCustomSkills(newValue);
+                        field.onChange(newValue);
                       }}
-                      error={!!errors['skills']}
-                      value={field.value}
-                      renderValue={(selected) => selected.join(', ')}
-                      MenuProps={MenuProps}
-                    >
-                      {SKILLS.map((skill) => (
-                        <MenuItem key={skill} value={skill}>
-                          <Checkbox checked={skills.indexOf(skill) > -1} />
-                          <ListItemText primary={skill} />
-                        </MenuItem>
-                      ))}
-                    </Select>
+                      freeSolo
+                      renderTags={(value, getTagProps) =>
+                        value.map((option, index) => (
+                          <Chip key={index} label={option} {...getTagProps({ index })} />
+                        ))
+                      }
+                      renderInput={(params) => (
+                        <TextField {...params} label="Skills" error={!!errors['skills']} />
+                      )}
+                    />
                   )}
                 />
                 <FieldErrorAlert errors={errors} fieldName={'skills'} />

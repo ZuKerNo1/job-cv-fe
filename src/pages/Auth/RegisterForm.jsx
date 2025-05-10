@@ -14,6 +14,8 @@ import MenuItem from '@mui/material/MenuItem';
 import TrelloIcon from '../../assets/trello-icon.svg?react';
 import TextField from '@mui/material/TextField';
 import Zoom from '@mui/material/Zoom';
+import Autocomplete from '@mui/material/Autocomplete';
+import Chip from '@mui/material/Chip';
 import {
   FIELD_REQUIRED_MESSAGE,
   EMAIL_RULE,
@@ -53,9 +55,9 @@ function RegisterForm() {
       skills: []
     }
   });
-  const [skills, setSkills] = useState([]);
-  const [jobTypes, setJobTypes] = useState([]);
   const [listJobsType, setListJobsType] = useState([]);
+  const [customSkills, setCustomSkills] = useState([]);
+
   useEffect(() => {
     const fetchJobTypes = async () => {
       try {
@@ -67,22 +69,15 @@ function RegisterForm() {
     };
     fetchJobTypes();
   }, []);
-  const handleChangeSkills = (event) => {
-    const {
-      target: { value }
-    } = event;
-    setSkills(
-      // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value
-    );
-  };
-  const handleChangeJobTypes = (event) => {
-    const {
-      target: { value }
-    } = event;
 
-    setJobTypes(typeof value === 'string' ? value.split(',') : value);
+  const handleChangeSkills = (event, newValue) => {
+    setCustomSkills(newValue);
   };
+
+  const handleChangeJobTypes = (event, field) => {
+    field.onChange(event.target.value);
+  };
+
   const submitRegister = (data) => {
     delete data.password_confirmation;
     data.role = ROLE_USER.JOB_SEEKER;
@@ -185,10 +180,7 @@ function RegisterForm() {
                     {...field}
                     multiple
                     label="Job Categories"
-                    onChange={(event) => {
-                      field.onChange(event.target.value);
-                      handleChangeJobTypes(event);
-                    }}
+                    onChange={(event) => handleChangeJobTypes(event, field)}
                     error={!!errors['categories']}
                     value={field.value}
                     renderValue={(selected) => {
@@ -246,33 +238,31 @@ function RegisterForm() {
             </Box>
 
             <FormControl fullWidth margin="dense">
-              <InputLabel>Skills</InputLabel>
               <Controller
                 name="skills"
                 control={control}
                 defaultValue={[]}
                 rules={{ required: FIELD_REQUIRED_MESSAGE }}
                 render={({ field }) => (
-                  <Select
+                  <Autocomplete
                     {...field}
                     multiple
-                    label="Skills"
-                    onChange={(event) => {
-                      field.onChange(event.target.value);
-                      handleChangeSkills(event);
+                    options={SKILLS}
+                    value={customSkills}
+                    onChange={(event, newValue) => {
+                      field.onChange(newValue);
+                      handleChangeSkills(event, newValue);
                     }}
-                    error={!!errors['skills']}
-                    value={field.value}
-                    renderValue={(selected) => selected.join(', ')}
-                    MenuProps={MenuProps}
-                  >
-                    {SKILLS.map((skill) => (
-                      <MenuItem key={skill} value={skill}>
-                        <Checkbox checked={skills.indexOf(skill) > -1} />
-                        <ListItemText primary={skill} />
-                      </MenuItem>
-                    ))}
-                  </Select>
+                    freeSolo
+                    renderTags={(value, getTagProps) =>
+                      value.map((option, index) => (
+                        <Chip key={index} label={option} {...getTagProps({ index })} />
+                      ))
+                    }
+                    renderInput={(params) => (
+                      <TextField {...params} label="Skills" error={!!errors['skills']} />
+                    )}
+                  />
                 )}
               />
               <FieldErrorAlert errors={errors} fieldName={'skills'} />
