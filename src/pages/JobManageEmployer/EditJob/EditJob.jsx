@@ -240,7 +240,7 @@ const EditJobEmployer = () => {
                 <Select
                   {...field}
                   label="Loại công việc"
-                  error={!!errors['jobType']}
+                  error={!!errors['idCategory']}
                   value={field.value}
                 >
                   {jobTypes.map((type) => (
@@ -251,7 +251,7 @@ const EditJobEmployer = () => {
                 </Select>
               )}
             />
-            <FieldErrorAlert errors={errors} fieldName={'jobType'} />
+            <FieldErrorAlert errors={errors} fieldName={'idCategory'} />
           </FormControl>
           <Box
             sx={{
