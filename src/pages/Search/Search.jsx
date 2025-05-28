@@ -57,11 +57,10 @@ const Search = () => {
           sx={{
             display: 'grid',
             gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: '10px',
-            padding: '10px'
+            gap: '10px'
           }}
         >
-          {listJob ? (
+          {Array.isArray(listJob) && listJob.length > 0 ? (
             listJob.map((job) => (
               <Box
                 key={job._id}
@@ -73,7 +72,28 @@ const Search = () => {
               </Box>
             ))
           ) : (
-            <></>
+            <Box
+              sx={{
+                gridColumn: '1 / -1',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+                height: '100%',
+                paddingTop: '20px'
+              }}
+            >
+              <p
+                style={{
+                  textAlign: 'center',
+                  fontSize: '18px',
+                  color: '#888',
+                  margin: 0
+                }}
+              >
+                Không tìm thấy công việc phù hợp
+              </p>
+            </Box>
           )}
         </Box>
       </Box>

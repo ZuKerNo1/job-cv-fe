@@ -161,7 +161,6 @@ const EditJobEmployer = () => {
                   label="Requirements"
                   onChange={(event) => {
                     field.onChange(event.target.value);
-                    handleChangeSkills(event);
                   }}
                   defaultValue={job.requirements}
                   error={!!errors['requirements']}
@@ -216,7 +215,6 @@ const EditJobEmployer = () => {
                   label="Địa điểm làm việc"
                   onChange={(event) => {
                     field.onChange(event.target.value);
-                    handleChangeSkills(event);
                   }}
                   error={!!errors['jobLocation']}
                   defaultValue={field.value}

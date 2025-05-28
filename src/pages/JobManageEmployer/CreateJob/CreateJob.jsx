@@ -211,7 +211,6 @@ const CreateJob = () => {
                 label="Địa điểm làm việc"
                 onChange={(event) => {
                   field.onChange(event.target.value);
-                  handleChangeSkills(event);
                 }}
                 error={!!errors['jobLocation']}
                 value={field.value}
@@ -239,7 +238,7 @@ const CreateJob = () => {
                 {...field}
                 label="Loại công việc"
                 onChange={(event) => handleChangeJobTypes(event, field)}
-                error={!!errors['jobType']}
+                error={!!errors['idCategory']}
                 value={field.value}
                 renderValue={(selected) => {
                   return jobTypes
@@ -258,7 +257,7 @@ const CreateJob = () => {
               </Select>
             )}
           />
-          <FieldErrorAlert errors={errors} fieldName={'jobType'} />
+          <FieldErrorAlert errors={errors} fieldName={'idCategory'} />
         </FormControl>
 
         <Box
